@@ -2,12 +2,25 @@ name: TMAS Scan
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        type: environment
+        description: Which environment's TMAS_API_KEY secret to use
+      scanVuln:
+        description: "Scan for vulnerabilities"
+        type: boolean
+        default: true
+      scanSecret:
+        description: "Scan for secrets"
+        type: boolean
+        default: true
   push:
 
 jobs:
   tmas-scan:
     name: TMAS Repo Scan
     runs-on: ubuntu-22.04
+    environment: ${{ github.event.inputs.environment }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,7 +30,7 @@ jobs:
       - name: Download TMAS and Scan Repo for Open Source Vulnerabilities and Secrets
         uses: trendmicro/tmas-scan-action@v3.0.1
         with:
-          version: '2' # Recommended: pin to major version for automatic updates within v2.x.x
+          version: "2" # Recommended: pin to major version for automatic updates within v2.x.x
           vulnerabilitiesScan: true
           malwareScan: false
           secretsScan: true
