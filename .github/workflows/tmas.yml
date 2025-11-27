@@ -20,7 +20,7 @@ jobs:
   tmas-scan:
     name: TMAS Repo Scan
     runs-on: ubuntu-22.04
-    environment: ${{ github.event.inputs.environment }}
+    environment: ${{ github.event.inputs.environment || 'codesec prod' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,9 +31,9 @@ jobs:
         uses: trendmicro/tmas-scan-action@v3.0.1
         with:
           version: "2" # Recommended: pin to major version for automatic updates within v2.x.x
-          vulnerabilitiesScan: true
-          malwareScan: false
-          secretsScan: true
+          vulnerabilitiesScan: ${{ github.event.inputs.scanVuln || true}}
+          malwareScan: false # not supported for directory-based scans
+          secretsScan: ${{ github.event.inputs.scanSecret || true}}
           artifact: dir:./ollama-client
           additionalArgs: ${{ secrets.ADDITIONAL_ARGS }} -vv
           tmasApiKey: ${{ secrets.TMAS_API_KEY }}
